@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: auto-shorts-ai
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: MAX_UPLOAD_MB
+        value: 500
+      - key: WORK_DIR
+        value: /tmp/auto_shorts_jobs
