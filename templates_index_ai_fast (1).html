@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Auto Shorts AI Fast</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0d1220;color:#f5f7ff;font-family:Arial,sans-serif}main{max-width:680px;margin:24px auto;padding:16px}.card{background:#171f32;border:1px solid #303d59;border-radius:18px;padding:22px}h1{margin:0 0 8px;font-size:27px}p{color:#c1cbe0;line-height:1.5}label{display:block;margin:17px 0 7px;font-weight:bold}input,select,button{width:100%;padding:13px;border:1px solid #465574;border-radius:10px;background:#0f1728;color:white;font-size:16px}button{margin-top:20px;background:#6558ed;border:0;font-weight:bold}button:disabled{opacity:.55}.note{margin-top:16px;padding:13px;border-radius:12px;background:#302a1a;color:#f3dfa4;line-height:1.5;font-size:14px}#status{margin-top:16px;padding:14px;background:#0f1728;border-radius:12px;line-height:1.6;overflow-wrap:anywhere}progress{width:100%;height:14px;margin-top:12px}a{color:#b7adff;font-weight:bold}
+</style></head><body><main><section class="card">
+<h1>Auto Shorts AI — Fast</h1><p>AI आवाज़ पहचानकर captions बनाएगा और वीडियो को 9:16 vertical clips में बदलेगा।</p>
+<form id="form">
+<label>अपना वीडियो चुनें</label><input type="file" name="video" id="video" accept="video/*" required>
+<label>कितनी clips?</label><select name="count"><option value="3">3 clips</option><option value="5" selected>5 clips</option><option value="8">8 clips</option><option value="10">10 clips</option></select>
+<label>हर clip की लंबाई</label><select name="clip_length"><option value="10">10 सेकंड</option><option value="15">15 सेकंड</option><option value="20" selected>20 सेकंड</option><option value="30">30 सेकंड</option></select>
+<label>AI Caption मॉडल</label><select name="model"><option value="tiny" selected>Tiny AI — तेज़</option><option value="base">Base AI — बेहतर पहचान, धीमा</option></select>
+<button id="go">✨ AI Shorts बनाएं</button></form>
+<div class="note"><b>Fast AI:</b> Tiny मॉडल पूरी वीडियो को एक बार सुनकर captions बनाता है। फिर clips 720p में fast encoding से बनती हैं। समय वीडियो की लंबाई और Render server पर निर्भर है; 1 मिनट की गारंटी नहीं।</div>
+<div id="status" aria-live="polite">अभी कोई वीडियो process नहीं हो रहा।</div><progress id="bar" max="100" value="0"></progress>
+</section></main>
+<script>
+const form=document.getElementById('form'),box=document.getElementById('status'),bar=document.getElementById('bar'),go=document.getElementById('go'),wait=ms=>new Promise(r=>setTimeout(r,ms));
+form.addEventListener('submit',async e=>{e.preventDefault();if(!document.getElementById('video').files.length){box.textContent='वीडियो फ़ाइल चुनें।';return;}go.disabled=true;bar.value=0;box.textContent='वीडियो upload हो रहा है…';try{const r=await fetch('/api/jobs',{method:'POST',body:new FormData(form)}),d=await r.json();if(!r.ok)throw Error(d.error||'Upload में समस्या');box.textContent='AI processing शुरू…';while(true){await wait(2500);const s=await fetch('/api/jobs/'+encodeURIComponent(d.job_id)),j=await s.json();if(!s.ok)throw Error(j.error||'Status नहीं मिला');bar.value=j.progress||0;box.textContent=(j.message||j.status)+' ('+(j.progress||0)+'%)';if(j.status==='done'){box.innerHTML=j.message+'<br><a href="'+j.download+'">AI Shorts ZIP डाउनलोड करें</a>';break;}if(j.status==='error')throw Error(j.message||'Processing error');}}catch(err){box.textContent='समस्या: '+err.message;}finally{go.disabled=false;}});
+</script></body></html>
